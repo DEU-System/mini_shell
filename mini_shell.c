@@ -224,10 +224,10 @@ void selectCmd(int i, char **argv){
 	cmd_cp(argv[i+1], argv[i+2]);
     }
     else if(!strcmp(argv[i], "rm")){ //정현수
-
+	cmd_rm(argv[i+1]);
     }
     else if(!strcmp(argv[i], "mv")){ //정현수
-
+	cmd_mv(argv[i+1], argv[i+2]);
     }
 }
 
@@ -250,7 +250,7 @@ void cmd_ln(char *argv1, char *argv2){
 	}
 }
 
-void cmd_cp(char *argv1, char *argv2){
+void cmd_cp(char *argv1, char *argv2){ //@@@ 폴더 복사도 구현하면 좋을 듯@@@
 	char buf[BUFSIZE];
 	int argv1_fd, argv2_fd; // 파일 디스크립터
 	ssize_t readCount; 
@@ -273,4 +273,13 @@ void cmd_cp(char *argv1, char *argv2){
 	}
 	close(argv1_fd);
 	close(argv2_fd);	
+}
+
+void cmd_rm(char *argv){
+	remove(argv); //한 파일을 시스템으로부터 제거하는 명령
+}
+
+void cmd_mv(char *argv, char *path){
+	cmd_cp(argv,path); //파일을 path 경로에 복사
+	cmd_rm(argv); //기존 파일을 삭제
 }
