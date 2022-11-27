@@ -18,6 +18,8 @@
 #include <string.h>
 #include <signal.h>
 
+#define BUFSIZE 512 
+
 void ctrl_c(int sig){
     signal(sig, SIG_IGN);
     printf("Ctrl_C: 쉘 종료\n");
@@ -28,7 +30,7 @@ void ctrl_z(int sig, int flag){
     printf(" 쉘 일시정지\n");
     printf(" fg 명령으로 재개 가능\n");
     raise(SIGSTOP);
-    printf(" 쉘 재개..\n");
+    printf(" 쉘 재개\n");
     signal(sig, ctrl_z);
 }
 
@@ -71,10 +73,7 @@ void main() {
 
     while (1) { /* 무한 루프
     	* 사용자로부터 명령어 입력을 받아들인다.
-    	* 명령어 인자를 구분한다
-    	* 자식 프로세스를 생성한다
-    	* if(자식 프로세스) 명령어를 실행한다.
-    	* else if(부모 프로세스) 자식 프로세스를 기다린다. */
+    	* 명령어 인자를 구분한다. */
     	
         pwd_print();
         printf(" : shell> ");
@@ -204,10 +203,10 @@ void run_pipe(int i, char **argv){
 void selectCmd(int i, char **argv){
     //argv 판별 후, 알맞은 명령 실행
     if(!strcmp(argv[i], "cat")){ //정현수
-
+	cmd_cat(argv[i+1]);
     }
     else if(!strcmp(argv[i], "ls")){ //정민수
-    
+
     }
     else if(!strcmp(argv[i], "pwd")){ //정민수
     
@@ -232,3 +231,14 @@ void selectCmd(int i, char **argv){
     }
 }
 
+void cmd_cat(char *argv){
+	char buf[BUFSIZE];
+	int fd;
+	if((fd=open(argv,O_RDONLY)) == -1){ // 해당 파일(argv)를 읽기 전용으로 개방
+		perror("open"); 
+		exit(1);
+	}
+	while(read(fd, buf, BUFSIZE) >0){ // EOF까지 반복
+		printf("%s", buf);
+	}
+}
