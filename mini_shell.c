@@ -163,7 +163,7 @@ void run(int i, int opt, char **argv){
                 perror("close"); /* errno에 대응하는 메시지 출력됨*/
                 exit(1);
             }
-            // my_cat(argv[i+2]); // @@@@@@@@@@@@ 구현하고 주석 지워줘야함@@@@@@@@@@@@@
+            // cat(argv[i+2]); // @@@@@@@@@@@@ 구현하고 주석 지워줘야함@@@@@@@@@@@@@
             selectCmd(i, argv);
             exit(0);
         }
@@ -218,10 +218,10 @@ void selectCmd(int i, char **argv){
 
     }
     else if(!strcmp(argv[i], "ln")){ //정현수
-
+	cmd_ln(argv[i+1], argv[i+2]);
     }
     else if(!strcmp(argv[i], "cp")){ //정현수
-
+	cmd_cp(argv[i+1], argv[i+2]);
     }
     else if(!strcmp(argv[i], "rm")){ //정현수
 
@@ -241,4 +241,36 @@ void cmd_cat(char *argv){
 	while(read(fd, buf, BUFSIZE) >0){ // EOF까지 반복
 		printf("%s", buf);
 	}
+}
+
+void cmd_ln(char *argv1, char *argv2){
+	if(link(argv1, argv2)<0){ //원본 argv1의 링크 argv2를 생성
+		perror("link");
+		exit(1);
+	}
+}
+
+void cmd_cp(char *argv1, char *argv2){
+	char buf[BUFSIZE];
+	int argv1_fd, argv2_fd; // 파일 디스크립터
+	ssize_t readCount; 
+	mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; /* == 0644 */
+	
+	if((argv1_fd = open(argv1,O_RDONLY)) == -1){ // 해당 파일(argv1)를 읽기 전용으로 개방
+		perror("open"); 
+		exit(1);
+	}
+	if((argv2_fd = creat(argv2,mode)) == -1){ // 파일(argv2) 생성
+		perror("creat"); 
+		exit(1);
+	}
+	while((readCount = read(argv1_fd, buf, BUFSIZE)) > 0){ //문자를 buf에 저장
+		write(argv2_fd, buf, readCount); // buf에 저장된 문자를 argv2에 씀
+	}
+	if(readCount < 0){
+		perror("read");
+        	exit(1);
+	}
+	close(argv1_fd);
+	close(argv2_fd);	
 }
