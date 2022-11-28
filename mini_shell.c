@@ -203,6 +203,40 @@ void run(int i, int opt, char **argv){
 }
 
 void run_pipe(int i, char **argv){
+    char buf[1024];
+    int p[2];
+    int pid;
+
+    if (pipe(p) == -1) {
+        perror("pipe call failed");
+        exit(1);
+    }
+
+    pid = fork();
+    
+
+    if(pid == 0) { // 자식 프로세스
+        close(p[0]);
+        if(dup2(p[1], STDOUT_FILENO) == -1) {
+            perror("dup2"); // errno에 대응하는 메시지 출력
+            exit(1);
+        }
+        close(p[1]);
+        selectCmd(i, argv);
+        exit(0);
+    }
+    else if (pid > 0) {
+        wait(pid);
+        char *arg[1024];
+        close(p[1]);
+        sprintf(buf, "%d", p[0]);
+        arg[0] = argv[i+2];
+        arg[1] = buf;
+        selectCmd(0, arg);
+    }
+    else {
+        perror("fork failed");
+    }
 }
 
 void selectCmd(int i, char **argv){
@@ -270,8 +304,8 @@ void cmd_mkdir(char *path) {
 }
 
 void cmd_pwd() {
-    char buf[BUFSIZE];
-    getcwd(buf, BUFSIZE);
+    char buf[1024];
+    getcwd(buf, 1024);
     printf("%s\n", buf);
 }
 
