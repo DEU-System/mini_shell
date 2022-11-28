@@ -12,10 +12,10 @@
 #include <unistd.h> // 표준 심볼 상수 및 자료형에 대한 함수를 가지고 있으며, 쉘 사용에 필요한 각종 명령어를 처리하기 위한 라이브러리
 #include <sys/types.h> // C 언어 환경에서 여러 프로세스를 이용하기 위하여 프로세스를 대기시키는데 사용되는 라이브러리
 #include <dirent.h> // gcc를 통해서 사용할 수 있는 디렉토리 연관 라이브러리
-#include <sys/stat.h>
+#include <sys/stat.h> // 파일 정보를 담고 있는 라이브러리
 #include <fcntl.h> // 리눅스 및 유닉스 환경에서 파일을 관리하기 위하여 사용되는 라이브러리
 #include <errno.h> // 프로그램 에러 발생에 대한 처리를 위한 라이브러리
-#include <string.h> // 
+#include <string.h> // 문자열을 처리할 수 있는 라이브러리
 #include <signal.h> // 특정 프로세스의 종료나, 사용자의 인터럽트가 발생할 때 시그널을 보내 이를 처리해주기 위한 라이브러리
 
 #define BUFSIZE 512 
@@ -189,7 +189,12 @@ void run(int i, int opt, char **argv){
             wait(pid);
 	    }
         if(!strcmp(argv[i], "cd")){ // 정민수
-        
+            if(argv[i+1] == NULL) {
+                fprintf(stderr, "few argument\n");
+            }
+            else {
+                cmd_cd(argv[i+1]);
+            }
         }
     }
     else{
@@ -238,6 +243,17 @@ void selectCmd(int i, char **argv){
     }
     else if(!strcmp(argv[i], "mv")){ //정현수
 	    cmd_mv(argv[i+1], argv[i+2]);
+    }
+}
+
+void cmd_cd(char *path) {
+    if(chdir(path) < 0) {
+        perror("chdir");
+        exit(1);
+    }
+    else {
+        printf("move to ..");
+        cmd_pwd();
     }
 }
 
