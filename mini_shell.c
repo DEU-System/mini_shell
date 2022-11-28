@@ -7,16 +7,16 @@
 * 정민수 / 정현수
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <dirent.h>
+#include <stdio.h> // C언어 표준 입출력에 대한 라이브러리
+#include <stdlib.h> // 문자열 변환, 의사 난수 생성, 동적 메모리 관리 등을 위한 라이브러리
+#include <unistd.h> // 표준 심볼 상수 및 자료형에 대한 함수를 가지고 있으며, 쉘 사용에 필요한 각종 명령어를 처리하기 위한 라이브러리
+#include <sys/types.h> // C 언어 환경에서 여러 프로세스를 이용하기 위하여 프로세스를 대기시키는데 사용되는 라이브러리
+#include <dirent.h> // gcc를 통해서 사용할 수 있는 디렉토리 연관 라이브러리
 #include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <signal.h>
+#include <fcntl.h> // 리눅스 및 유닉스 환경에서 파일을 관리하기 위하여 사용되는 라이브러리
+#include <errno.h> // 프로그램 에러 발생에 대한 처리를 위한 라이브러리
+#include <string.h> // 
+#include <signal.h> // 특정 프로세스의 종료나, 사용자의 인터럽트가 발생할 때 시그널을 보내 이를 처리해주기 위한 라이브러리
 
 #define BUFSIZE 512 
 
@@ -203,10 +203,10 @@ void run_pipe(int i, char **argv){
 void selectCmd(int i, char **argv){
     //argv 판별 후, 알맞은 명령 실행
     if(!strcmp(argv[i], "cat")){ //정현수
-	cmd_cat(argv[i+1]);
+	    cmd_cat(argv[i+1]);
     }
     else if(!strcmp(argv[i], "ls")){ //정민수
-
+        cmd_ls();
     }
     else if(!strcmp(argv[i], "pwd")){ //정민수
     
@@ -218,17 +218,38 @@ void selectCmd(int i, char **argv){
 
     }
     else if(!strcmp(argv[i], "ln")){ //정현수
-	cmd_ln(argv[i+1], argv[i+2]);
+	    cmd_ln(argv[i+1], argv[i+2]);
     }
     else if(!strcmp(argv[i], "cp")){ //정현수
-	cmd_cp(argv[i+1], argv[i+2]);
+	    cmd_cp(argv[i+1], argv[i+2]);
     }
     else if(!strcmp(argv[i], "rm")){ //정현수
-	cmd_rm(argv[i+1]);
+	    cmd_rm(argv[i+1]);
     }
     else if(!strcmp(argv[i], "mv")){ //정현수
-	cmd_mv(argv[i+1], argv[i+2]);
+	    cmd_mv(argv[i+1], argv[i+2]);
     }
+}
+
+void cmd_ls() {
+    DIR *pdir; 
+    struct dirent *pde;
+    int i = 0;
+
+    if ( (pdir = opendir(".")) < 0) {
+        perror("opendir");
+        exit(1);
+    }
+
+    while((pde = readdir(pdir)) != NULL) {
+        printf("%20s ", pde->d_name);
+
+        if(++i % 3 == 0)
+            printf("\n");
+    }
+
+    printf("\n");
+    closedir(pdir);
 }
 
 void cmd_cat(char *argv){
