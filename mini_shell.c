@@ -212,7 +212,7 @@ void selectCmd(int i, char **argv){
         cmd_pwd();
     }
     else if(!strcmp(argv[i], "mkdir")){ //정민수
-
+        cmd_mkdir(argv[i+1]);
     }
     else if(!strcmp(argv[i], "rmdir")){ //정민수
 
@@ -228,6 +228,12 @@ void selectCmd(int i, char **argv){
     }
     else if(!strcmp(argv[i], "mv")){ //정현수
 	    cmd_mv(argv[i+1], argv[i+2]);
+    }
+}
+
+void cmd_mkdir(char *argv) {
+    if(mkdir(argv, 0777) < 0) {
+        perror("mkdir");
     }
 }
 
