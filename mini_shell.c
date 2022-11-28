@@ -212,10 +212,20 @@ void selectCmd(int i, char **argv){
         cmd_pwd();
     }
     else if(!strcmp(argv[i], "mkdir")){ //정민수
-        cmd_mkdir(argv[i+1]);
+        if(argv[i+1] == NULL) {
+            fprintf(stderr, "few argument\n");
+        }
+        else {
+            cmd_mkdir(argv[i+1]);
+        }        
     }
     else if(!strcmp(argv[i], "rmdir")){ //정민수
-
+        if(argv[i+1] == NULL) {
+            fprintf(stderr, "few argument\n");
+        }
+        else {
+            cmd_rmdir(argv[i+1]);
+        }
     }
     else if(!strcmp(argv[i], "ln")){ //정현수
 	    cmd_ln(argv[i+1], argv[i+2]);
@@ -231,8 +241,14 @@ void selectCmd(int i, char **argv){
     }
 }
 
-void cmd_mkdir(char *argv) {
-    if(mkdir(argv, 0777) < 0) {
+void cmd_rmdir(char *argv) {
+    if(rmdir(argv) < 0) {
+        perror("rmdir");
+    }
+}
+
+void cmd_mkdir(char *path) {
+    if(mkdir(path, 0777) < 0) {
         perror("mkdir");
     }
 }
