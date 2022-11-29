@@ -254,7 +254,7 @@ void selectCmd(int i, char **argv){
         }
         
         if( (argv[i + 1][0] - 48) == 3 ) {
-            your_cat(arg);
+            your_cat(argv[i + 1][0] - 48);
         }
         else{
             cmd_cat(argv[i+1]);
