@@ -163,7 +163,7 @@ void run(int i, int opt, char **argv){
                 perror("close"); /* errno에 대응하는 메시지 출력됨*/
                 exit(1);
             }
-            // cat(argv[i+2]); // @@@@@@@@@@@@ 구현하고 주석 지워줘야함@@@@@@@@@@@@@
+            cmd_cat(argv[i+2]);
             selectCmd(i, argv);
             exit(0);
         }
@@ -188,7 +188,7 @@ void run(int i, int opt, char **argv){
         if(opt >= 0){ //백그라운드가 아닐 때
             wait(pid);
 	    }
-        if(!strcmp(argv[i], "cd")){ // 정민수
+        if(!strcmp(argv[i], "cd")){
             if(argv[i+1] == NULL) {
                 fprintf(stderr, "few argument\n");
             }
@@ -239,18 +239,34 @@ void run_pipe(int i, char **argv){
     }
 }
 
+void your_cat(int target){
+    char buffer[512];
+    while (read (target, buffer, 512) > 0){
+        printf("%s", buffer);
+    }
+}
+
 void selectCmd(int i, char **argv){
     //argv 판별 후, 알맞은 명령 실행
-    if(!strcmp(argv[i], "cat")){ //정현수
-	    cmd_cat(argv[i+1]);
+    if(!strcmp(argv[i], "cat")){
+	    if(argv[i+1] == NULL){
+            fprintf(stderr, "A few argument..!\n");
+        }
+        
+        if( (argv[i + 1][0] - 48) == 3 ) {
+            your_cat(arg);
+        }
+        else{
+            cmd_cat(argv[i+1]);
+        }
     }
-    else if(!strcmp(argv[i], "ls")){ //정민수
+    else if(!strcmp(argv[i], "ls")){
         cmd_ls();
     }
-    else if(!strcmp(argv[i], "pwd")){ //정민수
+    else if(!strcmp(argv[i], "pwd")){
         cmd_pwd();
     }
-    else if(!strcmp(argv[i], "mkdir")){ //정민수
+    else if(!strcmp(argv[i], "mkdir")){
         if(argv[i+1] == NULL) {
             fprintf(stderr, "few argument\n");
         }
@@ -258,7 +274,7 @@ void selectCmd(int i, char **argv){
             cmd_mkdir(argv[i+1]);
         }        
     }
-    else if(!strcmp(argv[i], "rmdir")){ //정민수
+    else if(!strcmp(argv[i], "rmdir")){
         if(argv[i+1] == NULL) {
             fprintf(stderr, "few argument\n");
         }
@@ -266,16 +282,16 @@ void selectCmd(int i, char **argv){
             cmd_rmdir(argv[i+1]);
         }
     }
-    else if(!strcmp(argv[i], "ln")){ //정현수
+    else if(!strcmp(argv[i], "ln")){
 	    cmd_ln(argv[i+1], argv[i+2]);
     }
-    else if(!strcmp(argv[i], "cp")){ //정현수
+    else if(!strcmp(argv[i], "cp")){
 	    cmd_cp(argv[i+1], argv[i+2]);
     }
-    else if(!strcmp(argv[i], "rm")){ //정현수
+    else if(!strcmp(argv[i], "rm")){
 	    cmd_rm(argv[i+1]);
     }
-    else if(!strcmp(argv[i], "mv")){ //정현수
+    else if(!strcmp(argv[i], "mv")){
 	    cmd_mv(argv[i+1], argv[i+2]);
     }
 }
@@ -349,7 +365,7 @@ void cmd_ln(char *argv1, char *argv2){
 	}
 }
 
-void cmd_cp(char *argv1, char *argv2){ //@@@ 폴더 복사도 구현하면 좋을 듯@@@
+void cmd_cp(char *argv1, char *argv2){
 	char buf[BUFSIZE];
 	int argv1_fd, argv2_fd; // 파일 디스크립터
 	ssize_t readCount; 
